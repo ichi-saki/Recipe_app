@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="collection-view">
+    <div class="collection-header">
+        <h2>{{collection.name}}</h2>
+        <p>By: <a href="{{url_for('recipes.profile', username=collection.username)}}">{{collection.username}}</a></p>
+        <p>{{collection.description}}</p>
+        <div class="meta">
+            <span>{{recipes|length}} recipes -</span>
+            <span>Collection Created: {{collection.created[:10]}}</span>
+        </div>
+
+        {%if session['user_id'] == collection.user_id%}
+        <div class="collection-action" style="margin-top: 1rem;">
+            <form method="POST" action="{{url_for('collections.delete_collection', collection_id=collection.collection_id)}}">
+                <button type="submit" class="btn-delete" onclick="return confirm('Confirm deletion of collection, saved recipes will be lost!')">Delete</button>
+            </form>
+        </div>
+        {%endif%}
+    </div>
+    
+    {%if recipes%}
+        <div class="recipe-grid">
+            {%for recipe in recipes%}
+            <div class="card">
+                <h3><a href="{{url_for('recipes.recipe', recipe_id=recipe.recipe_id)}}">{{recipe.title}}</a></h3>
+                <p>{{recipe.description}}</p>
+                <span class="category">{{recipe.category}}</span>
+                <div class="rating">
+                    {{recipe.rating_ave}} ({{recipe.rating_count}} ratings)
+                </div>
+
+                {% if session.get('user_id') == collection.user_id %}
+                <form method="POST" action="{{url_for('collections.remove_from_collection', collection_id=collection.collection_id, recipe_id=recipe.recipe_id)}}">
+                    <button type="submit" class="btn-delete" onclick="return confirm('Remove recipe from collection?')">
+                        Remove from Collection
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+            {%endfor%}
+        </div>
+    {%else%}
+        <div class="no-recipes">
+            <p>Collection is empty</p>
+        </div>
+    {%endif%}
+</div>
+{% endblock %}

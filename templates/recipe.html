@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="detail">
+    <div class="header">
+        <h2>{{recipe.title}}</h2>
+        <p>By: <a href="{{url_for('recipes.profile', username=recipe.username) }}">{{recipe.username}}</a></p>
+
+        <div class="meta">
+            <span class="category">{{recipe.category}}</span>
+            <div class="rating">
+                {{rating_ave}} ({{rating_count}} ratings)
+            </div>
+            <div class="rating-section">
+                <h4>Rate this recipe</h4>
+                {%if session.user_id%}
+                    {%if user_has_rated%}
+                        <p>Your current recipe rating: {{user_rating}}/5</p>
+                    {%else%}
+                        <p>Rate this recipe:</p>
+                    {%endif%}
+
+                    <form method="POST" action="{{url_for('recipes.rate_recipe', recipe_id=recipe.recipe_id)}}">
+                        <select name="rating" required>
+                            <option value="">Select rating</option>
+                            <option value="1">1 - Not good</option>
+                            <option value="2">2 - Its ok</option>
+                            <option value="3">3 - Good</option>
+                            <option value="4">4 - Amazing</option>
+                            <option value="5">5 - Delecious</option>
+                        </select>
+                        <button type="submit" class="btn">Submit</button>
+                    </form>
+                {%else%}
+                    <p><a href="{{url_for('auth.login')}}">Log in</a> to leave a rating</p>
+                {%endif%}
+            </div>
+            <span class="date">Posted: {{recipe.created[:10]}}</span>
+        </div>
+    </div>
+
+    {%if session.user_id == recipe.user_id%}
+    <div class="actions">
+        <a href="{{url_for('recipes.edit_recipe', recipe_id=recipe.recipe_id)}}" class="btn btn-primary">Edit</a>
+        <form action="{{url_for('recipes.delete_recipe', recipe_id=recipe.recipe_id) }}" method="POST" style="display: inline;">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Confirm deletion of recipe')">Delete</button>
+        </form>
+    </div>
+    {%endif%}
+
+    {%if session.user_id%}
+    <div class="collection-actions">
+            {%if user_collections%}
+            <h4>Add to collection</h4>
+            <form method="POST" action="{{url_for('collections.add_to_collection', recipe_id=recipe.recipe_id)}}">
+                <select name="collection_id" required>
+                    <option value="">Select Collection...</option>
+                    {%for collection in user_collections%}
+                    <option value="{{collection.collection_id}}">{{collection.name}}</option>
+                    {%endfor%}
+                </select>
+                <button type="submit" class="btn">Add to collection</button>
+            </form>
+            {%endif%}
+        {%else%}
+            <p><a href="{{url_for('auth.login')}}">Log in</a> to manage collections</p>
+    </div>
+    {%endif%}
+
+    {% if collections %}
+    <div class="collections">
+        <strong>Part of {{recipe.username}}'s' collection:</strong>
+        {% for collection in collections %}
+            <span class="collection-tag">{{collection.name}}</span>
+        {%endfor%}
+    </div>
+    {% endif %}
+
+    <div class="description">
+        <h3>Description</h3>
+        <p>{{recipe.description}}</p>
+    </div>
+
+    <div class="ingredients">
+        <h3>Ingredients</h3>
+        <pre>{{recipe.ingredients}}</pre>
+    </div>
+
+    <div class="instructions">
+        <h3>Instructions</h3>
+        <pre>{{recipe.instructions}}</pre>
+    </div>
+
+    <div class="comments">
+        <h3>Comments ({{comments|length}})</h3>
+        {%if session.user_id%}
+        <div class="comment-form">
+            <form method="POST" action="{{url_for('comments.make_comment', recipe_id=recipe.recipe_id)}}">
+                <textarea name="comment_text" rows="2" placeholder="Make comment.." required></textarea>
+                <button type="submit" class="btn">Comment</button>
+            </form>
+        </div>
+        {%else%}
+        <p><a href="{{url_for('auth.login')}}">Log in</a> to comment</p>
+        {%endif%}
+
+        {%if comments%}
+            <div class="comments-list">
+                {% for comment in comments %}
+                <div class="comment">
+                    <div class="comment-header">
+                        <strong>{{comment.username}}</strong>
+                        <span class="date">{{comment.created[:10]}}</span>
+                    </div>
+                    <p>{{comment.comment_text}}</p>
+
+                    {%if session.user_id == comment.user_id or session.user_id == recipe.user_id%}
+                        <form method="POST" action="{{url_for('comments.delete_comment', comment_id=comment.comment_id)}}" style="display: inline;">
+                            <button type="submit" class="btn-delete" onclick="return confirm('Delete comment?')">Delete</button>
+                        </form>
+                    {%endif%}
+                </div>
+                {%endfor%}
+            </div>
+            {%else%}
+                <p>Be the first comment!</p>
+            {%endif%}
+    </div>
+
+    <a href="{{url_for('recipes.index')}}">Back to home page</a>
+</div>
+{%endblock%}
