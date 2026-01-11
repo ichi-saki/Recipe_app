@@ -47,3 +47,36 @@ def signup():
             connection.close()
 
     return render_template('signup.html')
+
+@auth_blueprint.route('/login', methods=['GET', 'POST'])
+def login():
+    if 'user_id' in session:
+        return redirect(url_for('recipes.index'))
+    
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        if not username or not password:
+            flash('Both username and password are required!', 'error')
+            return render_template('login.html')
+        
+        connection = db_connection()
+        try:
+            user = connection.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchone()
+
+            if user and verify(user['hashed_password'], password):
+                session['user_id'] = user['user_id']
+                session['username'] = user['username']
+                flash(f'You are now logged in {user['username']}', 'success')
+                
+                return redirect(url_for('recipes.index'))
+            else:
+                flash('Username or password are invalid!', 'error')
+        
+        except Exception as e:
+            flash(f'Login error: {str(e)}', 'error')
+        finally:
+            connection.close()
+
+    return render_template('login.html')
