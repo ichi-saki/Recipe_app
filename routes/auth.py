@@ -80,3 +80,11 @@ def login():
             connection.close()
 
     return render_template('login.html')
+
+@auth_blueprint.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    session.pop('username', None)
+    flash('You\'re successfully logged out', 'success')
+
+    return redirect(url_for('recipes.index'))
