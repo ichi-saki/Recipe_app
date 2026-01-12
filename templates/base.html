@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width", ititial-scale="1.0">
+    <title>RECIPE SHARING PLATFORM</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+</head>
+<body>
+<div class="nav">
+    <a href="{{url_for('recipes.index')}}">Home</a>
+    <a href="{{url_for('recipes.create_recipe') }}">Create Recipe</a>
+    {%if session.username%}
+        <a href="{{url_for('recipes.profile', username=session.username)}}">My Profile</a>
+        <a href="{{url_for('auth.logout')}}">Logout</a>
+    {%else%}
+        <a href="{{url_for('auth.login')}}">Login</a>
+        <a href="{{url_for('auth.signup')}}">Signup</a>
+    {%endif%}
+    <div class="search-form">
+        <form method="GET" action="{{url_for('recipes.search')}}" class="search-form-inline">
+            <input type="text" name="q" placeholder="Search recipes.." value="{{request.args['q'] or ''}}" required>
+            <button type="submit" class="btn-search"> Search</button>
+        </form>
+    </div>
+</div>
+
+<div class="flash-c">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages%}
+                <div class="flash flash-{{category}}">
+                    {{message}}
+                    <button class="flash-close" onclick="this.parentElement.remove()">x</button>
+                </div>
+            {%endfor%}
+        {%endif%}
+    {%endwith%}
+</div>
+    {%block content%}{%endblock%}
+</body>
+</html>
