@@ -34,3 +34,34 @@ def make_comment(recipe_id):
         connection.close()
     
     return redirect(url_for('recipes.recipe', recipe_id=recipe_id))
+
+
+@comments_blueprint.route('/comment/<int:comment_id>/delete', methods=['POST'])
+@login_needed
+def delete_comment(comment_id):
+    connection = db_connection()
+    recipe_id = None
+
+    try:
+        comment = connection.execute('SELECT * FROM comment WHERE comment_id = ?', (comment_id,)).fetchone()
+
+        if not comment:
+            flash('Comment not found', 'error')
+            connection.close()
+            return redirect(url_for('recipes.index'))
+        
+        recipe_id = comment['recipe_id']
+
+        if comment['user_id'] == session['user_id'] or is_owner(recipe_id):
+            connection.execute('DELETE FROM comment WHERE comment_id = ?', (comment_id,))
+            connection.commit()
+            flash('Comment deleted successfully', 'success')
+        else:
+            flash('Only comment creater can delete their comments', 'error')
+
+    except Exception as e:
+        flash(f'Error deleting comment: {str(e)}', 'error')
+    finally:
+        connection.close()
+
+    return redirect(url_for('recipes.recipe', recipe_id=recipe_id))
