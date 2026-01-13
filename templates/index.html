@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="home">
+    <h2>Explore Recipes</h2>
+
+    {% if recipes %}
+        <div class="recipe-grid">
+            {% for recipe in recipes %}
+            <div class="card">
+                <h3><a href="{{ url_for('recipes.recipe', recipe_id=recipe.recipe_id)}}">{{ recipe.title }}</a></h3>
+                <p>{{ recipe.description }}</p>
+                <span class="category">{{ recipe.category }}</span>
+                <div class="rating">
+                    {{ recipe.rating_avg }} ({{ recipe.rating_count}} ratings)
+                </div>
+                <p><small>By: {{recipe.username}} {{recipe.created[:10 ]}}</small></p>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No recipes were found</p>
+    {% endif %}
+
+    {%if users%}
+    <h3>Explore Users</h3>
+    <div class="users-list">
+        {%for user in users%}
+            <a href="{{url_for('recipes.profile', username=user.username)}}">{{user.username}}</a>
+            {%if not loop.last%} | {%endif%}
+        {%endfor%}
+    </div>
+    {%endif%}
+
+</div>
+{% endblock %}
