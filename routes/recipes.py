@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
-from helpers import db_connection, add_ratings, rating_average
+from helpers import db_connection, add_ratings, rating_average, is_owner
 from functools import wraps
 
 recipes_blueprint = Blueprint('recipes', __name__)
@@ -140,3 +140,30 @@ def create_recipe():
             connection.close()
     
     return render_template('create_recipe.html')
+
+@recipes_blueprint.route('/recipe/<int:recipe_id>/delete', methods=['POST'])
+@login_needed
+def delete_recipe(recipe_id):
+
+    if not is_owner(recipe_id):
+        flash('Only recipe creator can edit their recipes!', 'error')
+        return redirect(url_for('recipes.recipe', recipe_id=recipe_id))
+    
+
+    connection = db_connection()
+
+    try:
+        connection.execute('DELETE FROM comment WHERE recipe_id = ?', (recipe_id,))
+        connection.execute('DELETE FROM rating WHERE recipe_id = ?', (recipe_id,))
+        connection.execute('DELETE FROM recipe_collection WHERE recipe_id = ?', (recipe_id,))
+        connection.execute('DELETE FROM recipe WHERE recipe_id=?', (recipe_id,))
+
+        connection.commit()
+        flash('Recipe deletion successful!', 'success')
+        return redirect(url_for('recipes.index'))
+    except Exception as e:
+        flash(f'Recipe deletion error: {str(e)}', 'error')
+    finally:
+        connection.close()
+
+    return redirect(url_for('recipes.index'))
