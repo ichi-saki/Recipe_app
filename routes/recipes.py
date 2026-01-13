@@ -106,3 +106,37 @@ def recipe(recipe_id):
     connection.close()
 
     return render_template('recipe.html', recipe=recipe, rating_ave=rating_ave, rating_count=rating_count, user_has_rated=user_has_rated, user_rating=user_rating, user_collections=user_collections, comments=comments, collections=collections)
+
+
+
+@recipes_blueprint.route('/recipe/create', methods=['GET', 'POST'])
+@login_needed
+def create_recipe():
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        ingredients = request.form['ingredients']
+        instructions = request.form['instructions']
+        category = request.form['category']
+
+        if not title or not ingredients or not instructions:
+            flash('Title, ingreditents, and instructions are empty!', 'error')
+            return render_template('create_recipe.html')
+
+        user_id = session['user_id']
+        connection = db_connection()
+        try:
+            connection.execute('''
+                    INSERT INTO recipe (user_id, title, description, ingredients, instructions, category)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                               ''', (user_id, title, description, ingredients, instructions, category))
+            
+            connection.commit()
+            flash('Recipe creation successful!', 'success')
+            return redirect(url_for('recipes.profile', username=session['username']))
+        except Exception as e:
+            flash(f'Recipe creation error: {str(e)}', 'error')
+        finally:
+            connection.close()
+    
+    return render_template('create_recipe.html')
