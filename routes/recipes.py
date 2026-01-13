@@ -4,6 +4,15 @@ from functools import wraps
 
 recipes_blueprint = Blueprint('recipes', __name__)
 
+def login_needed(f):
+    @wraps(f)
+    def decorated_func(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Login needed to access this page.', 'error')
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_func
+
 #for home page
 @recipes_blueprint.route('/')
 def index():
