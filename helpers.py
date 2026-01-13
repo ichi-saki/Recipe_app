@@ -31,3 +31,11 @@ def add_ratings(recipes):
         recipes_and_ratings.append(r_dict)
 
     return recipes_and_ratings
+
+def current_user():
+    if 'user_id' in session:
+        connection = db_connection()
+        user = connection.execute('SELECT * FROM user WHERE user_id = ?', (session['user_id'],)).fetchone()
+        connection.close()
+        return user
+    return None
