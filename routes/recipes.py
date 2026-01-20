@@ -140,6 +140,52 @@ def create_recipe():
             connection.close()
     
     return render_template('create_recipe.html')
+@recipes_blueprint.route('/recipe/<int:recipe_id>/edit', methods=['GET', 'POST'])
+@login_needed
+def edit_recipe(recipe_id):
+
+    if not is_owner(recipe_id):
+        flash('Only recipe creator can edit their recipes!', 'error')
+        return redirect(url_for('recipes.recipe', recipe_id=recipe_id))
+    
+    connection = db_connection()
+    
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        ingredients = request.form['ingredients']
+        instructions = request.form['instructions']
+        category = request.form['category']
+
+        try:
+            connection.execute('''
+                    UPDATE recipe
+                    SET title = ?, description = ?, ingredients = ?, instructions = ?, category = ?
+                    WHERE recipe_id = ?
+                    ''', (title, description, ingredients, instructions, category, recipe_id))
+            
+            connection.commit()
+            connection.close()
+            flash('Recipe updated successfully!', 'success')
+            return redirect(url_for('recipes.recipe', recipe_id=recipe_id))
+        except Exception as e:
+            connection.close()
+            flash(f'Recipe update error: {str(e)}', 'error')
+            return render_template('edit_recipe.html', recipe={'recipe_id': recipe_id,
+                                                           'title': title,
+                                                           'description': description,
+                                                           'ingredients': ingredients,
+                                                           'instructions': instructions,
+                                                           'category': category})
+    
+    recipe = connection.execute('SELECT * FROM recipe WHERE recipe_id = ?', (recipe_id,)).fetchone()
+    connection.close()
+
+    if recipe is None:
+        flash('Recipe not found', 'error')
+        return redirect(url_for('recipes.index'))
+    
+    return render_template('edit_recipe.html', recipe=recipe)
 
 @recipes_blueprint.route('/recipe/<int:recipe_id>/delete', methods=['POST'])
 @login_needed
