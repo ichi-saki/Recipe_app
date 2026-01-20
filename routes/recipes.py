@@ -213,6 +213,52 @@ def delete_recipe(recipe_id):
         connection.close()
 
     return redirect(url_for('recipes.index'))
+@recipes_blueprint.route('/search')
+def search():
+    s = request.args['q'].strip()
+
+    if not s:
+        flash('Nothing to search for', 'error')
+        return redirect(url_for('recipes.index'))
+    
+    connection = db_connection()
+
+    try:
+        pattern = f'%{s}%'
+
+        
+        recipes = connection.execute('''SELECT r.*, u.username
+                                            FROM recipe r
+                                            JOIN user u ON r.user_id = u.user_id
+                                            WHERE LOWER(r.category) = LOWER(?)
+                                            ORDER BY r.created DESC''', (s,)).fetchall()
+        if not recipes:
+            recipes = connection.execute('''SELECT r.*, u.username
+                                            FROM recipe r
+                                            JOIN user u ON r.user_id = u.user_id
+                                            WHERE r.title LIKE ?
+                                                OR r.description LIKE ?
+                                                OR r.ingredients LIKE ?
+                                                OR r.category LIKE ?
+                                            ORDER BY r.created DESC
+                                        ''', (pattern, pattern, pattern, pattern)).fetchall()
+        
+        users = connection.execute('''SELECT username, user_id
+                                    FROM user
+                                    WHERE username LIKE ?
+                                    ORDER BY username
+                                    LIMIT 10''', (pattern,)).fetchall()
+
+        recipes_with_ratings = add_ratings(recipes)
+        connection.close()
+        results_count = len(recipes_with_ratings) + len(users)
+        return render_template('results.html', recipes=recipes_with_ratings, users=users, s=s, results_count=results_count)
+
+    except Exception as e:
+        flash(f'Search error: {str(e)}', 'error')
+        connection.close()
+        
+        return redirect(url_for('recipes.index'))
 
 @recipes_blueprint.route('/recipe/<int:recipe_id>/rate', methods=['POST'])
 @login_needed
