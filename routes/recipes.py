@@ -213,3 +213,31 @@ def delete_recipe(recipe_id):
         connection.close()
 
     return redirect(url_for('recipes.index'))
+
+@recipes_blueprint.route('/recipe/<int:recipe_id>/rate', methods=['POST'])
+@login_needed
+def rate_recipe(recipe_id):
+    try:
+        rating = int(request.form['rating'])
+
+        connection = db_connection()
+
+        exists = connection.execute('SELECT * FROM rating WHERE user_id = ? AND recipe_id = ?', (session['user_id'], recipe_id)).fetchone()
+
+        if exists:
+            connection.execute('''UPDATE rating SET value = ?
+                                WHERE user_id = ? AND recipe_id = ?
+                               ''', (rating, session['user_id'], recipe_id))
+            flash('Rating successfully updated', 'success')
+        else:
+            connection.execute('''INSERT INTO rating (user_id, recipe_id, value)
+                                VALUES (?, ?, ?)''', (session['user_id'], recipe_id, rating))
+            flash('Recipe successfully rated', 'success')
+        
+        connection.commit()
+        connection.close()
+
+    except Exception as e:
+        flash(f'Rating recipe error: {str(e)}', 'error')
+    
+    return redirect(url_for('recipes.recipe', recipe_id=recipe_id))
