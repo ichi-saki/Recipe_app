@@ -39,3 +39,17 @@ def current_user():
         connection.close()
         return user
     return None
+
+
+def is_owner(recipe_id):
+    curr_user = current_user()
+    if not curr_user:
+        return False
+    
+    connection = db_connection()
+    try:
+        recipe = connection.execute('SELECT user_id FROM recipe WHERE recipe_id=?', (recipe_id,)).fetchone()
+        connection.close()
+        return recipe and recipe['user_id'] == curr_user['user_id']
+    except Exception as e:
+        return False
