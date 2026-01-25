@@ -13,6 +13,31 @@ def login_needed(f):
         return f(*args, **kwargs)
     return decorated_func
 
+@collections_blueprint.route('/collection/new', methods=['GET', 'POST'])
+@login_needed
+def create_collection():
+    if request.method == 'POST':
+        name = request.form['name'].strip()
+        description = request.form['description'].strip()
+
+        if not name:
+            flash('Collection name is needed', 'error')
+            return render_template('create_collection.html')
+        
+        connection = db_connection()
+        try:
+            connection.execute('''INSERT INTO collection (user_id, name, description)
+                               VALUES (?, ?, ?)''', (session['user_id'], name, description))
+            connection.commit()
+            flash('Collection successfully created', 'success')
+            return redirect(url_for('recipes.profile', username=session['username']))
+        except Exception as e:
+            flash(f'Collection creation error: {str(e)}', 'error')
+        finally:
+            connection.close()
+
+    return render_template('create_collection.html')
+
 
 @collections_blueprint.route('/collection/<int:collection_id>')
 def view_collection(collection_id):
