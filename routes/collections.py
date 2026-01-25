@@ -74,6 +74,31 @@ def add_to_collection(recipe_id):
 
     return redirect(url_for('recipes.recipe', recipe_id=recipe_id))
 
+@collections_blueprint.route('/collection/<int:collection_id>/remove_recipe/<int:recipe_id>', methods=['POST'])
+@login_needed
+def remove_from_collection(collection_id, recipe_id):
+    connection = db_connection()
+
+    try:
+        collection = connection.execute('SELECT * FROM collection WHERE collection_id = ? AND user_id = ?', (collection_id, session['user_id'])).fetchone()
+
+        if not collection:
+            flash('Collection access denied or not found', 'error')
+            return redirect(url_for('recipes.recipe', recipe_id=recipe_id))
+        
+        connection.execute('''DELETE FROM recipe_collection
+                            WHERE recipe_id = ? AND collection_id = ?''', (recipe_id, collection_id))
+        connection.commit()
+        flash('Recipe successfully removed from collection', 'success')
+
+    except Exception as e:
+        flash(f'Removing recipe from collection error: {str(e)}', 'error')
+    finally:
+        connection.close()
+
+    return redirect(url_for('collections.view_collection', collection_id=collection_id))
+
+
 @collections_blueprint.route('/collection/<int:collection_id>')
 def view_collection(collection_id):
     connection = db_connection()
