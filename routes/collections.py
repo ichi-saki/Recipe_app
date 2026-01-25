@@ -38,6 +38,41 @@ def create_collection():
 
     return render_template('create_collection.html')
 
+@collections_blueprint.route('/recipe/<int:recipe_id>/add_to_collection', methods=['POST'])
+@login_needed
+def add_to_collection(recipe_id):
+    
+    collection_id = request.form['collection_id']
+
+    if not collection_id:
+        flash('Select a collection!', 'error')
+        return redirect(url_for('recipes.recipe', recipe_id=recipe_id))
+    
+    connection = db_connection()
+
+    try:
+        collection = connection.execute('SELECT * FROM collection WHERE collection_id = ? AND user_id = ?', (collection_id, session['user_id'])).fetchone()
+
+        if not collection:
+            flash('Collection access denied or not found', 'error')
+            connection.close()
+            return redirect(url_for('recipes.recipe', recipe_id=recipe_id))
+        
+        exists = connection.execute('SELECT * FROM recipe_collection WHERE recipe_id = ? AND collection_id = ?', (recipe_id, collection_id)).fetchone()
+
+        if exists:
+            flash('Recipe already in collection', 'info')
+        else:
+            connection.execute('''INSERT INTO recipe_collection (recipe_id, collection_id)
+                                VALUES (?, ?)''', (recipe_id, collection_id))
+            connection.commit()
+            flash('Recipe successfully added to collection', 'success')
+    except Exception as e:
+        flash(f'Error adding recipe to collection: {str(e)}', 'error')
+    finally:
+        connection.close()
+
+    return redirect(url_for('recipes.recipe', recipe_id=recipe_id))
 
 @collections_blueprint.route('/collection/<int:collection_id>')
 def view_collection(collection_id):
