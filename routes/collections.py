@@ -4,6 +4,16 @@ from functools import wraps
 
 collections_blueprint = Blueprint('collections', __name__)
 
+def login_needed(f):
+    @wraps(f)
+    def decorated_func(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Login needed to access this page.', 'error')
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_func
+
+
 @collections_blueprint.route('/collection/<int:collection_id>')
 def view_collection(collection_id):
     connection = db_connection()
