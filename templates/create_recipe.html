@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form">
+    <h2>Create a Recipe</h2>
+
+    <form method="POST" class="recipe-form">
+        <div class="form-group">
+            <label for="title">Title *</label>
+            <input type="text" id="title" name='title' required placeholder="Enter title..">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="3" placeholder="Enter description"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+                <option value="">Select Category</option>
+                <option value="Vegeterian">Vegeterian</option>
+                <option value="Italian">Italian</option>
+                <option value="Mexican">Mexican</option>
+                <option value="Dessert">Dessert</option>
+                <option value="Drink">Drink</option>
+                <option value="Smoothie">Smoothie</option>
+                <option value="Breakfast">Breakfast</option>
+                <option value="Soups">Soups</option>
+                <option value="Quick and Easy">Quick and Easy</option>
+                <option value="Main Course">Main Course</option>
+                <option value="Beverage">Beverage</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ingredients">Ingredients *</label>
+            <textarea id="ingredients" name="ingredients" rows="6" required placeholder="List ingredients..."></textarea>
+            <small>Please enter 1 ingredient on one line</small>
+        </div>
+
+        <div class="form-group">
+            <label for="instructions">instructions *</label>
+            <textarea id="instructions" name="instructions" rows="8" required placeholder="Enter instructions.."></textarea>
+            <small>Please enter 1 step on 1 line</small>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Create</button>
+            <a href="{{url_for('recipes.profile', username=session['username'])}}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{%endblock%}
