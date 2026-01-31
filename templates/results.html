@@ -1,0 +1,61 @@
+{%extends "base.html"%}
+{%block content%}
+<div class="search-results">
+    <div class="search-header">
+        <h2>Search Results</h2>
+        
+
+        <div class="search-info">
+            {%if category%}
+                <p>Found <strong>{{results_count}}</strong> recipes for "<strong>{{s}}</strong>" in <strong>{{category}}</strong> category</p>
+            {%else%}
+                <p>Found <strong>{{results_count}}</strong> recipes for "<strong>{{s}}</strong>"</p>
+            {%endif%}
+        </div>
+
+        <div class="search-actions">
+            <a href="{{url_for('recipes.index')}}" class="btn btn-secondary">Back to Home</a>
+        </div>
+    </div>
+
+    {%if users%}
+    <div class="results-section">
+        <h3>Users ({{users|length}})</h3>
+        <div class="users-grid">
+            {%for user in users%}
+            <div class="card user-card">
+                <a href="{{url_for('recipes.profile', username=user.username)}}">{{user.username}}</a>
+                <p><small>View users recipes or collections</small></p>
+            </div>
+            {%endfor%}
+        </div>
+    </div>
+    {%endif%}
+
+    {%if recipes%}
+    <div class="results-section">
+        <h3>Recipes ({{recipes|length}})</h3>
+        <div class="grid">
+            {%for recipe in recipes%}
+            <div class="card">
+                <h3><a href="{{url_for('recipes.recipe', recipe_id=recipe.recipe_id)}}">{{recipe.title}}</a></h3>
+                <p>{{recipe.description}}</p>
+                <span class="category">{{recipe.category}}</span>
+                <div class="rating">
+                    {{recipe.rating_ave}} ({{recipe.rating_count}} ratings)
+                </div>
+                <p><small>Created by: {{recipe.username}}-{{recipe.created[:10]}}</small></p>
+            </div>
+            {%endfor%}
+        </div>
+    </div>
+    {%endif%}
+
+    {%if not users and not recipes%}
+        <div class="no-results">
+            <h3>No recipes found</h3>
+            <p>Try searching with different terms! or <a href="{{url_for('recipes.index')}}">view all recipes</a></p>
+        </div>
+    {%endif%}
+</div>
+{%endblock%}
