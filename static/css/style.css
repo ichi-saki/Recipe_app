@@ -241,3 +241,13 @@ small {
     justify-content: space-between;
     margin-bottom: 0.5rem;
 }
+
+.btn-delete {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
