@@ -395,3 +395,26 @@ small {
 .flash-close:hover{
     opacity: 0.7;
 }
+
+.category-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.category-tag {
+    background: #4ecdc4;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.category-tag:hover {
+    background: #3bb4ac;
+    text-decoration: none;
+    color: white;
+}
