@@ -537,3 +537,28 @@ small {
     margin-bottom: 1rem;
     color: #333;
 }
+
+.users-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.user-card {
+    text-align: center;
+    background: #f8f9fa;
+}
+
+.user-card h3 {
+    margin: 0;
+}
+
+.user-card a {
+    color: #ff6b6b;
+    text-decoration: none;
+}
+
+.user-card a:hover {
+    text-decoration: underline;
+}
