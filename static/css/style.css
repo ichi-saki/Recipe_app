@@ -562,3 +562,27 @@ small {
 .user-card a:hover {
     text-decoration: underline;
 }
+
+.search-info p {
+    font-size: 1.1rem;
+    margin: 1rem 0;
+}
+
+.collections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.collection-card .btn-delete{
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 0.5rem;
+}
