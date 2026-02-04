@@ -526,3 +526,14 @@ small {
 .users-list a:hover {
     text-decoration: underline;
 }
+
+.results-section {
+    margin: 2rem 0;
+}
+
+.results-section h3 {
+    border-bottom: 2px solid #ff6b6b;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
