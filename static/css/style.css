@@ -648,3 +648,14 @@ small {
 .collection-view .card form {
     margin-top: 1rem;
 }
+.collection-view .btn-delete {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
