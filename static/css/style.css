@@ -635,3 +635,16 @@ small {
 .btn-delete:hover {
     background: #c82333;
 }
+
+.collection-view .card {
+    position: relative;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.collection-view .card form {
+    margin-top: 1rem;
+}
