@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
-from helpers import db_connection, add_ratings, rating_average, is_owner
+from helpers import db_connection, rating_average, add_ratings, is_owner
 from functools import wraps
 
 recipes_blueprint = Blueprint('recipes', __name__)
@@ -107,8 +107,6 @@ def recipe(recipe_id):
 
     return render_template('recipe.html', recipe=recipe, rating_ave=rating_ave, rating_count=rating_count, user_has_rated=user_has_rated, user_rating=user_rating, user_collections=user_collections, comments=comments, collections=collections)
 
-
-
 @recipes_blueprint.route('/recipe/create', methods=['GET', 'POST'])
 @login_needed
 def create_recipe():
@@ -140,6 +138,7 @@ def create_recipe():
             connection.close()
     
     return render_template('create_recipe.html')
+
 @recipes_blueprint.route('/recipe/<int:recipe_id>/edit', methods=['GET', 'POST'])
 @login_needed
 def edit_recipe(recipe_id):
@@ -187,6 +186,7 @@ def edit_recipe(recipe_id):
     
     return render_template('edit_recipe.html', recipe=recipe)
 
+
 @recipes_blueprint.route('/recipe/<int:recipe_id>/delete', methods=['POST'])
 @login_needed
 def delete_recipe(recipe_id):
@@ -213,6 +213,7 @@ def delete_recipe(recipe_id):
         connection.close()
 
     return redirect(url_for('recipes.index'))
+
 @recipes_blueprint.route('/search')
 def search():
     s = request.args['q'].strip()
@@ -287,3 +288,4 @@ def rate_recipe(recipe_id):
         flash(f'Rating recipe error: {str(e)}', 'error')
     
     return redirect(url_for('recipes.recipe', recipe_id=recipe_id))
+
