@@ -35,7 +35,6 @@ def make_comment(recipe_id):
     
     return redirect(url_for('recipes.recipe', recipe_id=recipe_id))
 
-
 @comments_blueprint.route('/comment/<int:comment_id>/delete', methods=['POST'])
 @login_needed
 def delete_comment(comment_id):

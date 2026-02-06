@@ -37,6 +37,7 @@ def create_collection():
             connection.close()
 
     return render_template('create_collection.html')
+
 @collections_blueprint.route('/collection/<int:collection_id>/delete', methods=['POST'])
 @login_needed
 def delete_collection(collection_id):
@@ -63,6 +64,7 @@ def delete_collection(collection_id):
         connection.close()
 
     return redirect(url_for('recipes.profile', username=session['username']))
+
 
 @collections_blueprint.route('/recipe/<int:recipe_id>/add_to_collection', methods=['POST'])
 @login_needed
@@ -123,7 +125,6 @@ def remove_from_collection(collection_id, recipe_id):
         connection.close()
 
     return redirect(url_for('collections.view_collection', collection_id=collection_id))
-
 
 @collections_blueprint.route('/collection/<int:collection_id>')
 def view_collection(collection_id):
