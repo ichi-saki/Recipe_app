@@ -32,6 +32,9 @@ def add_ratings(recipes):
 
     return recipes_and_ratings
 
+def verify(stored_hash, provided_password):
+    return check_password_hash(stored_hash, provided_password)
+
 def current_user():
     if 'user_id' in session:
         connection = db_connection()
